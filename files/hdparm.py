@@ -11,34 +11,24 @@ import os
 import errno
 import subprocess
 
-def handle_disk(name, fd):
+def handle_disk(name):
 	fn = '/sys/class/block/{0}/queue/rotational'.format(name)
-	try:
-		f = open(fn, 'r')
-	except OSError as e:
-		if e.errno != errno.ENOENT:
-			raise
-		print('Error, maybe disk was immediately removed.')
-		print(e)
-		return
+	f = open(fn, 'r')
 	with f:
-		try:
 			data = f.read()
-		except OSError as e:
-			# Haven't tested what errno's to expect.
-			print('Error, maybe disk was immediately removed.')
-			print(e)
-			return
 
 	rotational = int(data)
 	if rotational == 0:
 		print('Skipping non-rotational drive {0}'.format(disk))
 
 	print('{0}: set APM to max performance'.format(disk))
-	rc = subprocess.call(('hdparm', '-q', '-B', '254', '/dev/fd/0'),
-	                     stdin=fd)
+
+	rc = subprocess.call(('hdparm', '-q', '-B', '254', '/dev/'+name))
+
 	if rc != 0:
 		print('Failed with exit status {0}'.format(rc))
+
+# FIXME: os.listdir()
 
 # Iterate SCSI / SAT / IDE drives (but not partitions thereof)
 disk_iter = (p.name for p in Path('/dev/').iterdir()
@@ -46,23 +36,4 @@ disk_iter = (p.name for p in Path('/dev/').iterdir()
 	        not p.match('*[0-9]'))
 
 for disk in disk_iter:
-	# If we work on an open fd, it can't be replaced half-way through.
-	# (it can just be closed by something like sys_revoke()).
-	disk_path = '/dev/' + disk
-
-	try:
-		# This matches hdparm.  O_RDONLY works, and avoids triggering
-		# rescan by udev (inotify).  O_NONBLOCK seems to be used to
-		# avoid requesting the equivalent of closing a CD tray.
-		disk_fd = os.open(disk_path, os.O_RDONLY | os.O_NONBLOCK)
-	except OSError as e:
-		if e.errno == errno.ENOENT:
-			# hot-unplug
-			continue
-		raise
-
-	try:
-		handle_disk(disk, disk_fd)
-	finally:
-		os.close(disk_fd)
-
+	handle_disk(disk)
