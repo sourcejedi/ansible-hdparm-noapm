@@ -1,0 +1,23 @@
+galaxy_info:
+  author: Alan Jenkins
+  description: Disable power saving on all hard drives
+  tags:
+    - disk
+    - hdparm
+    - wdidle
+    - load_cycle_count
+
+  license: GPLv3
+
+  # Ansible version without known vulnerabilities, according to debops project
+  min_ansible_version: 2.1.4.0
+
+  platforms:
+    - name: Fedora
+      versions:
+        - 24
+        - 25
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
