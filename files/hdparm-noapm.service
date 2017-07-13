@@ -1,0 +1,14 @@
+[Unit]
+Description=Disable power saving on rotating hard drives
+
+# Assumption: the relevant devices are available at boot time
+# (after local-fs.target, which is an automatic dependency).
+After=suspend.target hybrid-sleep.target
+
+[Service]
+Type=oneshot
+ExecStart=/etc/ansible-role/hdparm-noapm.sh
+
+[Install]
+WantedBy=multi-user.target \
+      suspend.target hybrid-sleep.target
