@@ -1,0 +1,35 @@
+# On Debian, hdparm will also install /etc/rcS.d/hdparm.
+# You might want to disable it, to avoid unecessary overhead at boot time.
+- name: Install hdparm
+  package:
+    name: hdparm
+    state: present
+
+- name: Copy script
+  copy:
+    src: hdparm-noapm.sh
+    dest: /etc/ansible-role/
+
+- name: Script must be executable
+  file:
+    path: /etc/ansible-role/hdparm-noapm.sh
+    mode: a+rx
+
+- name: Copy systemd service
+  copy:
+    src: hdparm-noapm.service
+    dest: /etc/systemd/system/
+
+- name: Enable systemd service
+  systemd:
+    daemon_reload: yes
+    name: hdparm-noapm.service
+    enabled: yes
+  register: enable_service
+
+# don't wait for next boot/suspend
+- name: Start systemd service
+  systemd:
+    name: hdparm-noapm.service
+    state: started  
+  when: enable_service.changed
