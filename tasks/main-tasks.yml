@@ -8,11 +8,11 @@
 - name: Copy script
   copy:
     src: hdparm-noapm.sh
-    dest: /etc/ansible-role/
+    dest: /usr/local/libexec/
 
 - name: Script must be executable
   file:
-    path: /etc/ansible-role/hdparm-noapm.sh
+    path: /usr/local/libexec/hdparm-noapm.sh
     mode: a+rx
 
 - name: Copy systemd service
@@ -27,7 +27,8 @@
     enabled: yes
   register: enable_service
 
-# don't wait for next boot/suspend
+# If the service wasn't already enabled, run the script immediately.
+# Don't wait for the next boot/suspend.
 - name: Start systemd service
   systemd:
     name: hdparm-noapm.service

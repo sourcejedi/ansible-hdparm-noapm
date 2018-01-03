@@ -7,7 +7,7 @@ After=suspend.target hibernate.target hybrid-sleep.target
 
 [Service]
 Type=oneshot
-ExecStart=/etc/ansible-role/hdparm-noapm.sh
+ExecStart=/usr/local/libexec/hdparm-noapm.sh
 
 [Install]
 WantedBy=multi-user.target \
