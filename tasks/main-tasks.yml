@@ -19,6 +19,7 @@
   copy:
     src: hdparm-noapm.service
     dest: /etc/systemd/system/
+  register: install_service
 
 - name: Enable systemd service
   systemd:
@@ -33,4 +34,4 @@
   systemd:
     name: hdparm-noapm.service
     state: started  
-  when: enable_service.changed
+  when: install_service.changed or enable_service.changed
