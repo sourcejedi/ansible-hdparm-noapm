@@ -21,9 +21,24 @@
     dest: /etc/systemd/system/
   register: install_service
 
-- name: Enable systemd service
+- name: Reload systemd service
   systemd:
     daemon_reload: yes
+  when: install_service.changed
+
+# "systemd: { enabled: yes }" is too naive.  It appears to believe the
+# same "enabled" status shown by `systemctl status`.  However this
+# can only be an approximation, since there can be multiple links.
+# Ansible 2.5.0, systemd 234.  The following covers the case that bit
+# me, though not all cases.
+- name: Reset systemd service enabled state
+  systemd:
+    name: hdparm-noapm.service
+    enabled: no
+  when: install_service.changed
+
+- name: Enable systemd service
+  systemd:
     name: hdparm-noapm.service
     enabled: yes
   register: enable_service
