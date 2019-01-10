@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: hdparm-noapm
   author: Alan Jenkins
   description: Disable power saving on all hard drives
   tags:
