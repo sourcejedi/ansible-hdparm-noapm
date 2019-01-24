@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Disable automatic head-parking on "green" hard drives (mainly Western 
 # Digital).  This helps to avoid exceeding the design LOAD_CYCLE_COUNT with
@@ -11,7 +11,7 @@ set -e
 
 handle_disk() {
 	local DEV="$1"
-	if [ "$(cat "/sys/class/block/$DEV/queue/rotational")" == "0" ]; then
+	if [ "$(cat "/sys/class/block/$DEV/queue/rotational")" = "0" ]; then
 		echo "$DEV: skipping non-rotating drive"
 		return
 	fi
