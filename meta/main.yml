@@ -18,5 +18,4 @@ galaxy_info:
         - all
     - name: Debian
       versions:
-        - jessie
-        - stretch
+        - all
